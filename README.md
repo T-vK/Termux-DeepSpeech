@@ -3,7 +3,8 @@
 ## Installation
 
 - Install the following (open source) apps: Termux, Termux:API
-- Open Termux and run `pkg i -y wget && mkdir -p "$HOME/Termux-DeepSpeech" && wget https://raw.githubusercontent.com/T-vK/Termux-DeepSpeech/speech2text -O "$HOME/Termux-DeepSpeech/speech2text && speech2text"
+- Open Termux and run 
+    `pkg i -y wget && mkdir -p "$HOME/Termux-DeepSpeech" && wget https://raw.githubusercontent.com/T-vK/Termux-DeepSpeech/speech2text -O "$HOME/Termux-DeepSpeech/speech2text && speech2text"`
 
 This will take a while beacuse it needs to download a pre-trained DeepSpeech model and a DeepSpeech release. It will probably also ask for microphone permissions (which are required for obvious reasons).
 
