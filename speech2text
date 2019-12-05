@@ -1,0 +1,96 @@
+#!/data/data/com.termux/files/usr/bin/bash
+DEEPSPEECH_VERSION=0.5.1
+SPEECH_TIME=2
+
+SOURCE_DIR="$(pwd)"
+
+enterScriptDir() {
+    SOURCE="${BASH_SOURCE[0]}"
+    while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+        DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+        SOURCE="$(readlink "$SOURCE")"
+        [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    done
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+    cd "$DIR"
+}
+
+#Ensure we're in the script's directory
+enterScriptDir
+
+export LD_LIBRARY_PATH="$(pwd)/deepspeech-bin/"
+
+#Setup
+command -v speech2text > /dev/null || ln -s "$(pwd)/speech2text" "$HOME/../usr/bin/speech2text" 
+ensure_requirements_installed() {
+    command -v ffmpeg > /dev/null || pkg i -y ffmpeg
+    #command -v mpv > /dev/null || pkg i -y mpv
+    command -v wget > /dev/null || pkg i -y wget
+    command -v termux-microphone-record > /dev/null || pkg i -y termux-api
+}
+download_deepspeech() {
+    rm -rf ./deepspeech-bin
+    mkdir ./deepspeech-bin
+    cd ./deepspeech-bin
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/native_client.arm64.cpu.android.tar.xz" -O ./native_client.tar.xz -q --show-progress
+    tar xf ./native_client.tar.xz
+    rm -f ./native_client.tar.xz
+    cd ..
+}
+
+download_example_audio() {
+    rm -rf ./audio
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/audio-${DEEPSPEECH_VERSION}.tar.gz" -O ./example-audio.tar.gz -q --show-progress
+    tar xf ./example-audio.tar.gz
+    rm -f ./example-audio.tar.gz
+}
+
+download_models() {
+    rm -rf ./models
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tar.gz" -O ./models.tar.gz -q --show-progress
+    tar xf ./models.tar.gz
+    rm -f ./models.tar.gz
+    mv ./deepspeech-*-models ./models
+}
+
+ensure_requirements_installed
+
+if [ ! -f ./deepspeech-bin/deepspeech ]; then
+    download_deepspeech
+fi
+
+DETECTED_DEEPSPEECH_VERSION=$(LD_LIBRARY_PATH="$LD_LIBRARY_PATH" ./deepspeech-bin/deepspeech --version 2>&1 | grep DeepSpeech | cut -d "v" -f2 | cut -d "-" -f1)
+
+if [ "$DEEPSPEECH_VERSION" != "$DETECTED_DEEPSPEECH_VERSION" ]; then
+    download_deepspeech
+    download_example_audio
+    download_models
+fi
+
+ls ./audio/*.wav &> /dev/null || download_example_audio
+
+if [ ! -f ./models/output_graph.tflite ]; then
+    download_models
+fi
+
+# Important part of the script
+
+mic_listen() {
+    rm -f ./tmp.mp4
+    rm -f ./tmp.wav
+    termux-microphone-record -f ./tmp.mp4 -l $SPEECH_TIME -r 16000 -c 1 -e amr_nb
+}
+recognize() {
+    termux-microphone-record -q > /dev/null
+    ffmpeg -loglevel panic -i ./tmp.mp4 -f wav -bitexact -acodec pcm_s16le -ar 16000 -ac 1 ./tmp.wav
+    termux-media-player play ./tmp.wav #play recording back before deepspeech
+
+    ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+}
+
+
+mic_listen
+sleep $SPEECH_TIME
+recognize
+
+cd "$SOURCE_DIR"
