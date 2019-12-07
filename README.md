@@ -16,23 +16,24 @@ If the installation was successful, you should now be able to use command `speec
 You could create bash scripts like this:
 ```
 #!/data/data/com.termux/files/usr/bin/bash
-WORDS="$(speech2text)"
 
-echo "Recognized: $WORDS"
-if [[ "$WORDS" =~ "light" ]]; then
-    if [[ $WORDS =~ "on" ]]; then
-        termux-tts-speak "Turning flashlight on"
-        termux-torch on
-    elif [[ $WORDS =~ "of" ]]; then
-        termux-tts-speak "Turning flashlight off"
-        termux-torch off
+WORDS="$(speech2text)" # This will listen to the microphone for (by default) 2 seoncds and the write what you said in the variable WORDS
+
+echo "Recognized: $WORDS" # Show what you just said
+
+if [[ "$WORDS" =~ "light" ]]; then # If what you said contained the word "light"
+    if [[ $WORDS =~ "on" ]]; then # If what you said contained the word "on"
+        termux-tts-speak "Turning flashlight on" # Let a robot voice say "Turning flashlight on"
+        termux-torch on # Turn the flashlight on
+    elif [[ $WORDS =~ "of" ]]; then # If what you said contained the word "of"
+        termux-tts-speak "Turning flashlight off" # Let a robot voice say "Turning flashlight off"
+        termux-torch off # Turn the flashlight off
     fi
-elif [[ "$WORDS" =~ "heating" ]] || [[ "$WORDS" =~ "temperature" ]]; then
+elif [[ "$WORDS" =~ "heating" ]] || [[ "$WORDS" =~ "temperature" ]]; then # If what you said contained the word "heating" or "temerature"
     # Do whatever here...
-    termux-tts-speak "Your thermostat has been updated."
+    termux-tts-speak "Your thermostat has been updated." # Let a robot voice speak...
 else
-    termux-tts-speak "You said: $WORDS"
-    sleep 3
+    termux-tts-speak "You said: $WORDS" # Let a robot voice repeat what it thought you said...
 fi
 ```
 
@@ -42,4 +43,4 @@ You can then then create a widget that triggers the script. Or using the app Hom
 
 ## Warning
 
-This is a very new script that has barely been tested. You might also have to isntall a TTS Engine (Flite TTS Engine is a good open source one) because I'm using text-to-speech commands a few times.
+This is a very new script that has barely been tested. You might also have to install a TTS Engine (Flite TTS Engine is a good open source one) because I'm using text-to-speech commands a few times in ther `Advanced usage` example.
