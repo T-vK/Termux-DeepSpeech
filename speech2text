@@ -89,7 +89,7 @@ mic_listen() {
 recognize() {
     termux-microphone-record -q > /dev/null
     ffmpeg -loglevel panic -i ./tmp.mp4 -f wav -bitexact -acodec pcm_s16le -ar 16000 -ac 1 ./tmp.wav
-    termux-media-player play ./tmp.wav > /dev/null #play recording back before deepspeech
+    termux-media-player play ./tmp.wav > /dev/null & #play recording back before deepspeech
 
     ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
 }
