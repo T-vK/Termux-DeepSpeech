@@ -51,6 +51,8 @@ download_models() {
     tar xf ./models.tar.gz
     rm -f ./models.tar.gz
     mv ./deepspeech-*-models ./models
+    rm -f ./._*
+    rm -f ./models/._*
 }
 
 ensure_requirements_installed
@@ -78,12 +80,16 @@ fi
 mic_listen() {
     rm -f ./tmp.mp4
     rm -f ./tmp.wav
-    termux-microphone-record -f ./tmp.mp4 -l $SPEECH_TIME -r 16000 -c 1 -e amr_nb
+    OUTPUT="$(termux-microphone-record -f ./tmp.mp4 -l $SPEECH_TIME -r 16000 -c 1 -e amr_nb)"
+    if [[ "$OUTPUT" =~ "Recording error: null" ]]; then
+        termux-notification --sound -t "Speech Recognition Error" -c "Can't access the mic. Make sure not other app is using the mic."
+        exit
+    fi
 }
 recognize() {
     termux-microphone-record -q > /dev/null
     ffmpeg -loglevel panic -i ./tmp.mp4 -f wav -bitexact -acodec pcm_s16le -ar 16000 -ac 1 ./tmp.wav
-    termux-media-player play ./tmp.wav #play recording back before deepspeech
+    termux-media-player play ./tmp.wav > /dev/null #play recording back before deepspeech
 
     ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
 }

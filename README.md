@@ -16,7 +16,7 @@ If the installation was successful, you should now be able to use command `speec
 You could create bash scripts like this:
 ```
 #!/data/data/com.termux/files/usr/bin/bash
-WORDS="$(speech2text | tail -1)"
+WORDS="$(speech2text)"
 
 echo "Recognized: $WORDS"
 if [[ "$WORDS" =~ "light" ]]; then
@@ -26,9 +26,9 @@ if [[ "$WORDS" =~ "light" ]]; then
     elif [[ $WORDS =~ "of" ]]; then
         termux-tts-speak "Turning flashlight off"
         termux-torch off
-    fi  
-    echo ""
+    fi
 elif [[ "$WORDS" =~ "heating" ]] || [[ "$WORDS" =~ "temperature" ]]; then
+    # Do whatever here...
     termux-tts-speak "Your thermostat has been updated."
 else
     termux-tts-speak "You said: $WORDS"
