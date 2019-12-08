@@ -2,6 +2,13 @@
 DEEPSPEECH_VERSION=0.5.1
 SPEECH_TIME=2
 
+ARCH="$(uname -m)"
+if [[ "$ARCH" =~ "64" ]]; then
+    ARCH="arm64"
+else
+    ARCH="armv7l"
+fi
+
 SOURCE_DIR="$(pwd)"
 
 enterScriptDir() {
@@ -32,7 +39,7 @@ download_deepspeech() {
     rm -rf ./deepspeech-bin
     mkdir ./deepspeech-bin
     cd ./deepspeech-bin
-    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/native_client.arm64.cpu.android.tar.xz" -O ./native_client.tar.xz -q --show-progress
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/native_client.${ARCH}.cpu.android.tar.xz" -O ./native_client.tar.xz -q --show-progress
     tar xf ./native_client.tar.xz
     rm -f ./native_client.tar.xz
     cd ..
