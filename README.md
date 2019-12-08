@@ -1,5 +1,8 @@
 # Open source offline speech recognition for Android using Mozilla's DeepSpeech in Termux
 
+## Requirements
+- ~4.5GB of disk space during installation; afterwards only ~2.5GB
+
 ## Installation
 
 - Install the following (open source) apps: Termux, Termux:API
@@ -14,7 +17,7 @@ If the installation was successful, you should now be able to use command `speec
 
 ## Advanced usage
 You could create bash scripts like this:
-```
+``` bash
 #!/data/data/com.termux/files/usr/bin/bash
 
 WORDS="$(speech2text)"                            # This will listen to the microphone for (by default) 2 seoncds and the write what you said in the variable WORDS
