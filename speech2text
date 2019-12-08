@@ -3,10 +3,10 @@ DEEPSPEECH_VERSION=0.5.1
 SPEECH_TIME=2
 
 ARCH="$(uname -m)"
-if [[ "$ARCH" =~ "64" ]]; then
+if [[ "$ARCH" == "aarm64" ]]; then
     ARCH="arm64"
-else
-    ARCH="armv7l"
+elif [[ "$ARCH" == "armv7l" ]]; then
+    ARCH="armv7"
 fi
 
 SOURCE_DIR="$(pwd)"
