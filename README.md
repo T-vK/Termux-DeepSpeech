@@ -1,7 +1,7 @@
 # Open source offline speech recognition for Android using Mozilla's DeepSpeech in Termux
 
 ## Requirements
-- ~4.5GB of disk space during installation; afterwards only ~2.5GB
+- ~3GB of disk space during installation; afterwards only ~2GB
 
 ## Installation
 
