@@ -1,9 +1,9 @@
 #!/data/data/com.termux/files/usr/bin/bash
-DEEPSPEECH_VERSION=0.5.1
+DEEPSPEECH_VERSION=0.6.0
 SPEECH_TIME=2
 
 ARCH="$(uname -m)"
-if [[ "$ARCH" == "aarm64" ]]; then
+if [[ "$ARCH" == "aarch64" ]]; then
     ARCH="arm64"
 elif [[ "$ARCH" == "armv7l" ]]; then
     ARCH="armv7"
@@ -55,15 +55,14 @@ download_example_audio() {
 download_models() {
     rm -rf ./models
     wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tar.gz" -O ./models.tar.gz -q --show-progress
+    echo "Extracting ./models.tar.gz ..."
     tar xf ./models.tar.gz
     rm -f ./models.tar.gz
     mv ./deepspeech-*-models ./models
     rm -f ./._*
     rm -f ./models/._*
 }
-
 ensure_requirements_installed
-
 if [ ! -f ./deepspeech-bin/deepspeech ]; then
     download_deepspeech
 fi
@@ -99,7 +98,11 @@ recognize() {
     rm -f ./tmp.mp4
     termux-media-player play ./tmp.wav > /dev/null & #play recording back before deepspeech
 
-    ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+    if [[ "$DEEPSPEECH_VERSION" == "0.5.1" ]]; then
+        ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+    else
+        ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+    fi
     rm -f ./tmp.wav
 }
 
