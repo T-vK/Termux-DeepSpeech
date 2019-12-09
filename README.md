@@ -2,6 +2,8 @@
 
 ## Requirements
 - ~3GB of disk space during installation; afterwards only ~2GB
+- [Termux](https://f-droid.org/app/com.termux)
+- [Termux:API](https://f-droid.org/app/com.termux.api)
 
 ## Installation
 
@@ -39,10 +41,10 @@ else
 fi
 ```
 
-If you install the Termux:Widgets app and save the above script under "$HOME/.shortcuts/tasks/" and make it executable for example like this: `chmod "$HOME/.shortcuts/tasks/speech-command"` (speech-command is the name of the script).
-You can then then create a widget that triggers the script. Or using the app HomeBot (open source) you can remap long-pressing the home button which usually triggers the Google voice assistent to run your speech-command script.
+If you install the [Termux:Widget](https://f-droid.org/app/com.termux.widget) app and save the above script under "$HOME/.shortcuts/tasks/" and make it executable for example like this: `chmod +x "$HOME/.shortcuts/tasks/speech-command"` (speech-command is the name of the script).
+You can then then create a widget that triggers the script. Or using the app [HomeBot](https://f-droid.org/app/com.abast.homebot) (open source) you can remap long-pressing the home button which usually triggers the Google voice assistent to run your speech-command script.
 
 
 ## Warning
 
-This is a very new script that has barely been tested. You might also have to install a TTS Engine (Flite TTS Engine is a good open source one) because I'm using text-to-speech commands a few times in the `Advanced usage` example.
+This is a very new script that has barely been tested. You might also have to install a TTS Engine ([Flite TTS Engine](https://f-droid.org/app/edu.cmu.cs.speech.tts.flite) is a good open source one) because I'm using text-to-speech commands a few times in the `Advanced usage` example.
