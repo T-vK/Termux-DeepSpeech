@@ -36,6 +36,7 @@ if [[ "$WORDS" =~ "light" ]]; then                # If what you said contained t
     fi
 elif [[ "$WORDS" =~ "heating" ]] || [[ "$WORDS" =~ "temperature" ]]; then   # If what you said contained the word "heating" or "temerature"
     # Do whatever here...
+    echo "Hello"
 else
     termux-tts-speak "You said: $WORDS"           # Let a robot voice repeat what it thought you said...
 fi
