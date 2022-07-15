@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-DEEPSPEECH_VERSION=0.6.0
+DEEPSPEECH_VERSION=0.9.3
 SPEECH_TIME=2
 
 ARCH="$(uname -m)"
@@ -54,18 +54,21 @@ download_example_audio() {
 
 download_models() {
     rm -rf ./models
-    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tar.gz" -O ./models.tar.gz -q --show-progress
-    echo "Extracting ./models.tar.gz ..."
-    tar xf ./models.tar.gz
-    rm -f ./models.tar.gz
-    mv ./deepspeech-*-models ./models
-    rm -f ./._*
-    rm -f ./models/._*
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tflite" -O "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" -q --show-progress
+    if [[ "$?" != 0 ]]; then
+        wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tar.gz" -O ./models.tar.gz -q --show-progress
+        echo "Extracting ./models.tar.gz ..."
+        tar xf ./models.tar.gz
+        rm -f ./models.tar.gz
+        mv ./deepspeech-*-models ./models
+        rm -f ./._*
+        rm -f ./models/._*
+    fi
 }
 ensure_requirements_installed
-if [ ! -f ./deepspeech-bin/deepspeech ]; then
-    download_deepspeech
-fi
+#if [ ! -f ./deepspeech-bin/deepspeech ]; then
+#    download_deepspeech
+#fi
 
 DETECTED_DEEPSPEECH_VERSION=$(LD_LIBRARY_PATH="$LD_LIBRARY_PATH" ./deepspeech-bin/deepspeech --version 2>&1 | grep DeepSpeech | cut -d "v" -f2 | cut -d "-" -f1)
 
@@ -77,7 +80,7 @@ fi
 
 ls ./audio/*.wav &> /dev/null || download_example_audio
 
-if [ ! -f ./models/output_graph.tflite ]; then
+if [ ! -f ./models/output_graph.tflite ] && [ ! -f "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" ]; then
     download_models
 fi
 
@@ -100,8 +103,12 @@ recognize() {
 
     if [[ "$DEEPSPEECH_VERSION" == "0.5.1" ]]; then
         ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
-    else
+    elif [ -f "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" ] ; then
+        ./deepspeech-bin/deepspeech --model "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+    elif [ -f ./models/output_graph.tflite ] ; then
         ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+    else
+        echo "Error: Couldn't find the deepspeech models!"
     fi
     rm -f ./tmp.wav
 }

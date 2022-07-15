@@ -2,3 +2,5 @@
 /deepspeech-bin
 /models
 /tmp.*
+/._audio
+*.tflite

@@ -9,7 +9,7 @@
 
 - Install the following (open source) apps: Termux, Termux:API
 - Open Termux and run
-    `pkg i -y git && git clone https://github.com/T-vK/Termux-DeepSpeech.git && cd ./Termux-DeepSpeech && ./speech2text`
+    `pkg i -y git && git clone -b feat/add-0.9.3-support https://github.com/T-vK/Termux-DeepSpeech.git && cd ./Termux-DeepSpeech && ./speech2text`
 
 This will take a while beacuse it needs to download a pre-trained DeepSpeech model and a DeepSpeech release. It will probably also ask for microphone permissions (which are required for obvious reasons).
 
