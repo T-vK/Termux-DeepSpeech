@@ -54,7 +54,8 @@ download_example_audio() {
 
 download_models() {
     rm -rf ./models
-    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tflite" -O "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" -q --show-progress
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tflite" -O "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" -q --show-progress && \
+    wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.scorer" -O "./deepspeech-${DEEPSPEECH_VERSION}-models.scorer" -q --show-progress
     if [[ "$?" != 0 ]]; then
         wget "https://github.com/mozilla/DeepSpeech/releases/download/v${DEEPSPEECH_VERSION}/deepspeech-${DEEPSPEECH_VERSION}-models.tar.gz" -O ./models.tar.gz -q --show-progress
         echo "Extracting ./models.tar.gz ..."
@@ -104,7 +105,7 @@ recognize() {
     if [[ "$DEEPSPEECH_VERSION" == "0.5.1" ]]; then
         ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
     elif [ -f "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" ] ; then
-        ./deepspeech-bin/deepspeech --model "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" --audio ./tmp.wav 2>&1 | tail -1
+        ./deepspeech-bin/deepspeech --model "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" --scorer "./deepspeech-${DEEPSPEECH_VERSION}-models.scorer" --audio ./tmp.wav 2>&1 | tail -1
     elif [ -f ./models/output_graph.tflite ] ; then
         ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
     else
