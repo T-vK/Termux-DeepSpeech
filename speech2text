@@ -104,7 +104,7 @@ recognize() {
     if [[ "$DEEPSPEECH_VERSION" == "0.5.1" ]]; then
         ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --alphabet ./models/alphabet.txt --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
     elif [ -f "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" ] ; then
-        ./deepspeech-bin/deepspeech --model "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
+        LD_LIBRARY_PATH="$(pwd)/deepspeech-bin" ./deepspeech-bin/deepspeech --model "./deepspeech-${DEEPSPEECH_VERSION}-models.tflite" --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
     elif [ -f ./models/output_graph.tflite ] ; then
         ./deepspeech-bin/deepspeech --model ./models/output_graph.tflite --lm ./models/lm.binary --trie ./models/trie --audio ./tmp.wav 2>&1 | tail -1
     else
